@@ -36,12 +36,6 @@ pipeline {
     		) 
             }
         }
-        stage('Deploy') {
-            steps {
-                echo 'Hello world!3' 
-		    echo "guy esta a deployar ${params.VERSION}"
-            }
-        }
 	    
 	stage('Deploy to PreProd') {
             steps {
@@ -53,7 +47,6 @@ pipeline {
                 folderName: "${UIPATH_ORCH_FOLDER_NAME}",
                 environments: 'Default',
                 credentials: [$class: 'UserPassAuthenticationEntry', credentialsId: 'APIUserKey'],
-                //credentials: Token(accountName: "${UIPATH_ORCH_LOGICAL_NAME}", credentialsId: 'APIUserKey'),
                 traceLevel: 'None',
 		entryPointPaths: 'Main.xaml'
        		)
