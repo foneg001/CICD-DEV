@@ -42,5 +42,35 @@ pipeline {
 		    echo "guy esta a deployar ${params.VERSION}"
             }
         }
+	    
+	stage('Deploy to PreProd') {
+            steps {
+                echo "Deploying ${BRANCH_NAME} to PreProd "
+                UiPathDeploy (
+                packagePath: "Output\\${env.BUILD_NUMBER}",
+                orchestratorAddress: "${UIPATH_ORCH_URL}",
+                orchestratorTenant: "${UIPATH_ORCH_TENANT_NAME}",
+                folderName: "${UIPATH_ORCH_FOLDER_NAME}",
+                environments: 'Default',
+                credentials: [$class: 'UserPassAuthenticationEntry', credentialsId: 'APIUserKey'],
+                //credentials: Token(accountName: "${UIPATH_ORCH_LOGICAL_NAME}", credentialsId: 'APIUserKey'),
+                traceLevel: 'None',
+		entryPointPaths: 'Main.xaml'
+       		)
+            }
+        }    
+    }
+	
+	post {
+        success {
+            echo 'Deployment to Dev. Env. has been completed!'
+        }
+        failure {
+          echo "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.JOB_DISPLAY_URL})"
+        }
+        always {
+            /* Clean workspace if success */
+            cleanWs()
+        }
     }
 }
